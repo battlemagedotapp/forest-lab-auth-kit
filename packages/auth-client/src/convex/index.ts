@@ -255,14 +255,18 @@ export function createSignalTriggers(options: {
   if (options.features.organization)
     for (const table of ["organization", "member", "invitation", "user"])
       result[table] = { onCreate: change(table), onUpdate: change(table), onDelete: change(table) };
+  // A person's sessions share one signal row, so marking it inside the mutation that signs them in
+  // would make concurrent sign-ins of one account conflict on it until Convex gives up. The mark
+  // runs after the session's change instead, as its own mutation.
+  const sessionsChanged: Trigger = async (ctx, doc) => {
+    if (typeof doc.userId !== "string") throw new Error("Session is missing its userId");
+    await ctx.scheduler.runAfter(0, options.markSessionsChanged, { userId: doc.userId });
+  };
   if (options.features.sessions)
     result.session = {
-      onCreate: change("session"),
-      onUpdate: change("session"),
-      onDelete: async (ctx, doc) => {
-        if (typeof doc.userId !== "string") throw new Error("Session is missing its userId");
-        await ctx.scheduler.runAfter(0, options.markSessionsChanged, { userId: doc.userId });
-      },
+      onCreate: sessionsChanged,
+      onUpdate: sessionsChanged,
+      onDelete: sessionsChanged,
     };
   if (options.features.passkeys)
     result.passkey = {

@@ -54,6 +54,33 @@ it("marks the owner's passkeys signal whenever a passkey is added, used or remov
   const rows = await t.run((ctx) => ctx.db.query("authSignals").collect());
   expect(rows.map((r) => [r.scope, r.subject, r.revision])).toEqual([["passkeys", "owner", 3]]);
 });
+it("marks a person's sessions signal after the change, so sign-ins of one account never conflict", async () => {
+  const { makeFunctionReference } = await import("convex/server");
+  const triggers = createSignalTriggers({
+    features: { sessions: true },
+    lookup: makeFunctionReference("lookup:lookup"),
+    markSessionsChanged: makeFunctionReference<"mutation", { userId: string }, null>(
+      "auth:markSessionsChanged",
+    ) as any,
+  });
+  const t = convexTest(defineSchema({ ...authSignalTables }), {
+    "./_generated/server.js": async () => import("convex/server"),
+  });
+  const session = { _id: "session", userId: "owner" };
+  await t.run(async (ctx) => {
+    await triggers.session?.onCreate?.(ctx as any, session);
+    await triggers.session?.onUpdate?.(ctx as any, { ...session, updatedAt: 1 }, session);
+    await triggers.session?.onDelete?.(ctx as any, session);
+  });
+  const [rows, scheduled] = await t.run(async (ctx) => [
+    await ctx.db.query("authSignals").collect(),
+    await ctx.db.system.query("_scheduled_functions").collect(),
+  ]);
+  expect(rows).toEqual([]);
+  expect(scheduled.map((job) => [job.name, job.args])).toEqual(
+    Array(3).fill(["auth:markSessionsChanged", [{ userId: "owner" }]]),
+  );
+});
 it("composes application triggers first and propagates rejection", async () => {
   const calls: string[] = [];
   const hooks = composeTriggers(
