@@ -1,3 +1,4 @@
 import { defineSchema } from "convex/server";
 import { authSignalTables } from "@strawdev/auth-client/convex";
-export default defineSchema(authSignalTables);
+import { billingTables } from "@strawdev/auth-client/convex/billing";
+export default defineSchema({ ...authSignalTables, ...billingTables });

@@ -7,6 +7,7 @@ const metadata = v.union(
     email: v.optional(v.string()),
     organizationId: v.optional(v.string()),
     inviterId: v.optional(v.string()),
+    role: v.optional(v.string()),
   }),
 );
 export type LookupMetadata = Infer<typeof metadata>;
@@ -68,7 +69,7 @@ export const lookup = queryGeneric({
             .eq("userId", args.userId!),
         )
         .unique();
-      return row ? { _id: row._id } : null;
+      return row ? { _id: row._id, role: row.role } : null;
     }
     if (args.model === "user" && args.email) {
       const row = await ctx.db

@@ -326,6 +326,45 @@ const authData = createAuthDataClient({
 `passkeys` is backed by the `passkeys` signal (the `passkey` table's triggers), so set it on both
 sides; it needs `authentication`.
 
+## Billing (prepaid wallets)
+
+One prepaid wallet per owner (an organization id, or any string you bill), an append-only ledger, credit that expires,
+and [Dodo Payments](https://dodopayments.com) as merchant of record (it handles tax, invoices and payouts). Amounts are
+integers in the catalog currency's major unit (yen for JPY).
+
+```ts
+// convex/schema.ts
+import { billingTables } from "@strawdev/auth-client/convex/billing";
+export default defineSchema({ ...authSignalTables, ...billingTables });
+
+// convex/billing.ts — see examples/backend/convex/billing.ts for the whole file
+export const catalog = defineCatalog({
+  currency: "JPY",
+  creditMonths: 24,
+  packs: [
+    { id: "jpy500", price: 500, credit: 500, products: { test_mode: "pdt_…", live_mode: "pdt_…" } },
+  ],
+});
+```
+
+- **Reads** (from your own authorized queries): `wallet(ctx, owner)` → balance, last top-up, `level`
+  (`ok` · `low` ≤ 30 % · `critical` ≤ 10 % · `empty`) and the next expiry; `history(ctx, owner, paginationOpts)`;
+  `purchases(ctx, owner)`.
+- **Writes** (inside your mutations): `grant(ctx, { owner, amount, key, reason })` and
+  `charge(ctx, { owner, amount, key, reason, allowDebt? })`. The `key` makes each one apply once. Without `allowDebt`
+  a short balance charges nothing and returns `{ ok: false, shortBy }`; with it the balance may go below zero, and the
+  next grant repays the debt first. Charges use the soonest-expiring credit first; `expireCredit(ctx)` (a daily cron)
+  removes what is left of expired credit.
+- **Buying**: your action authorizes the buyer and calls `createCheckout({ catalog, mode, apiKey, owner, packId,
+customer, returnUrl })`; the browser's `useCheckout(api.billing.checkout).start(owner, packId)` sends the tab to
+  Dodo's hosted checkout.
+- **Webhook**: an `httpAction` calls `verifyWebhook(request, secret)` (Standard Webhooks signature, 5-minute window)
+  and runs a mutation with `applyWebhookEvent(ctx, catalog, mode, event)`: `payment.succeeded` grants the pack's
+  credit (only when the cart holds that pack's product), `refund.succeeded` takes back the refunded share. Replays
+  change nothing. Subscribe the endpoint to `payment.succeeded` and `refund.succeeded`.
+- **Env**: `DODO_PAYMENTS_ENVIRONMENT` (`test_mode` · `live_mode`), `DODO_PAYMENTS_API_KEY`,
+  `DODO_PAYMENTS_WEBHOOK_SECRET`.
+
 ## Low-level reads and methods
 
 ```tsx

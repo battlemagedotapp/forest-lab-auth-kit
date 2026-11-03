@@ -34,6 +34,14 @@
     "./better-auth": {
       "types": "./dist/better-auth/index.d.ts",
       "import": "./dist/better-auth/index.js"
+    },
+    "./billing": {
+      "types": "./dist/billing/index.d.ts",
+      "import": "./dist/billing/index.js"
+    },
+    "./convex/billing": {
+      "types": "./dist/convex/billing.d.ts",
+      "import": "./dist/convex/billing.js"
     }
   },
   "scripts": {

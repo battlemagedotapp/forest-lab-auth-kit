@@ -1506,6 +1506,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
           email?: string;
           inviterId?: string;
           organizationId?: string;
+          role?: string;
         },
         Name
       >;
