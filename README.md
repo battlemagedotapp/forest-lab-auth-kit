@@ -1,13 +1,15 @@
-# Better Auth × Convex Client
+# Forest Lab auth kit
 
-`@strawdev/auth-client` supplies presentation-neutral authentication, account, organization, invitation, member, and session workflows around your existing Better Auth client backed by Convex. Better Auth retains credentials and reactive session ownership. The library owns reusable forms, guarded writes, synchronization, and recovery; authenticated Convex revision queries keep supported resources fresh.
+A fork of [`@strawdev/auth-client`](https://github.com/strawdotdev/auth-client) for Forest Lab, published as `@forest-lab/auth-kit`: everything upstream has, plus [prepaid billing](#billing-prepaid-wallets). Install with `pnpm add github:battlemagedotapp/forest-lab-auth-kit#v0.9.0`.
+
+`@forest-lab/auth-kit` supplies presentation-neutral authentication, account, organization, invitation, member, and session workflows around your existing Better Auth client backed by Convex. Better Auth retains credentials and reactive session ownership. The library owns reusable forms, guarded writes, synchronization, and recovery; authenticated Convex revision queries keep supported resources fresh.
 
 The v0.4 contract extends the compatible organization/session API with opt-in authentication and account workflows. Navigation, styling, application data, and product policy remain application-owned.
 
 ## Setup
 
 ```tsx
-import { createAuthDataClient, AuthDataProvider } from "@strawdev/auth-client";
+import { createAuthDataClient, AuthDataProvider } from "@forest-lab/auth-kit";
 
 export const authData = createAuthDataClient({
   authClient, // existing concretely typed Better Auth React client
@@ -222,7 +224,7 @@ Better Auth's [anonymous plugin](https://www.better-auth.com/docs/plugins/anonym
 `features: { authentication: true, guests: true }` (client-only; it needs `anonymousClient()`) is for an app where every visitor plays at once as a guest:
 
 - `AuthDataProvider` signs a visitor with no session in anonymously, once, and records when the first authentication is reached. Pass `hasStoredSession` (with `crossDomainClient()` or `expoClient()`: `() => authClient.getCookie().includes("session_token")`) so a visitor whose device holds no session becomes a guest at once, alongside Better Auth's first session read rather than after it: one round trip less before the first paint. Without it, the guest sign-in waits for that read.
-- Add `guests()` from `@strawdev/auth-client/better-auth` to the server's plugins so a guest's sign-in answers with its session: the client takes it as the session instead of reading it again, another round trip less (Better Auth still reads it once more in the background). Without it, the guest sign-in is followed by a session read.
+- Add `guests()` from `@forest-lab/auth-kit/better-auth` to the server's plugins so a guest's sign-in answers with its session: the client takes it as the session instead of reading it again, another round trip less (Better Auth still reads it once more in the background). Without it, the guest sign-in is followed by a session read.
 - Signing out (and `PasswordResetForm`'s `signOutAfterReset`) leaves a fresh guest; recovery retries the guest sign-in without signing out again. A guest resetting an account's password keeps their own session.
 - `useGuestSession()` returns `userId`, `isAnonymous`, `isEstablished` and the usual `feedback`/`isPending`. `isEstablished` turns true at the first authentication and never false again: gate the first paint on it, never on Convex's `isAuthenticated`, which turns false for a moment whenever a token changes hands. A failed guest sign-in is feedback whose `recovery` retries it.
 
@@ -253,11 +255,11 @@ host can rewrite the path). `crossDomain` is not used.
 
 ```ts
 // Backend (Better Auth options)
-import { deviceAccounts } from "@strawdev/auth-client/better-auth";
+import { deviceAccounts } from "@forest-lab/auth-kit/better-auth";
 plugins: [multiSession(), bearer(), deviceAccounts() /* organization(), convex(), ... */];
 
 // Client
-import { deviceAccountsClient } from "@strawdev/auth-client";
+import { deviceAccountsClient } from "@forest-lab/auth-kit";
 const authClient = createAuthClient({
   baseURL: window.location.origin,
   plugins: [
@@ -334,7 +336,7 @@ integers in the catalog currency's major unit (yen for JPY).
 
 ```ts
 // convex/schema.ts
-import { billingTables } from "@strawdev/auth-client/convex/billing";
+import { billingTables } from "@forest-lab/auth-kit/convex/billing";
 export default defineSchema({ ...authSignalTables, ...billingTables });
 
 // convex/billing.ts — see examples/backend/convex/billing.ts for the whole file
@@ -425,7 +427,7 @@ The workflows replace supported-domain form state, action readiness, conflict gu
 Install the precompiled release:
 
 ```sh
-pnpm add '@strawdev/auth-client@github:strawdotdev/auth-client#v0.8.0'
+pnpm add '@forest-lab/auth-kit@github:strawdotdev/auth-client#v0.8.0'
 ```
 
 Release tags contain the ready-to-use package at the repository root: JavaScript, declarations, and source maps. Installation does not compile this library, install its development tooling, or require permission to run its build scripts. The application still bundles normally and supplies the documented peer dependencies and authentication/backend configuration.

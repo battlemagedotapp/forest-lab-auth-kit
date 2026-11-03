@@ -31,7 +31,7 @@ it("appends compiled releases, preserves old tags, and refuses to replace a vers
       const release = await mkdtemp(join(directory, "package-"));
       await writeFile(
         join(release, "package.json"),
-        JSON.stringify({ name: "@strawdev/auth-client", version }),
+        JSON.stringify({ name: "@forest-lab/auth-kit", version }),
       );
       if (version === "0.1.0") await writeFile(join(release, "obsolete.js"), "export {};\n");
       return spawnSync(process.execPath, [resolve("tools/publish-release.mjs")], {

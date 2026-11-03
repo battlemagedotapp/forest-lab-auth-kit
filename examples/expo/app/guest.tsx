@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ScrollView, Text, TextInput } from "react-native";
-import { AuthDataProvider } from "@strawdev/auth-client";
+import { AuthDataProvider } from "@forest-lab/auth-kit";
 import { guestAuthData } from "../auth";
 import { ActionButton, WorkflowFeedback } from "./index";
 

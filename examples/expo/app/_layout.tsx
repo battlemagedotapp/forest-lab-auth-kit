@@ -3,7 +3,7 @@ import { useEffect, type ComponentProps } from "react";
 import { AppState, Platform } from "react-native";
 import * as Network from "expo-network";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
-import { AuthDataProvider, withStoredConvexToken } from "@strawdev/auth-client";
+import { AuthDataProvider, withStoredConvexToken } from "@forest-lab/auth-kit";
 import { authClient, convex, authData } from "../auth";
 function Recovery() {
   useEffect(() => {

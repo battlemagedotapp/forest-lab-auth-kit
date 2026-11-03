@@ -11,7 +11,7 @@
     "@better-auth/expo": "1.6.22",
     "@convex-dev/better-auth": "0.12.5",
     "@convex-dev/resend": "0.2.7",
-    "@strawdev/auth-client": "workspace:*",
+    "@forest-lab/auth-kit": "workspace:*",
     "better-auth": "1.6.22",
     "convex": "1.46.0",
     "zod": "4.6.4"

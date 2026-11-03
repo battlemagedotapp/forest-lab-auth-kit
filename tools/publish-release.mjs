@@ -45,7 +45,7 @@ git("add", "--all");
 git("commit", "-m", `Release ${tag}\n\nSource: ${source}`);
 git("tag", "-a", tag, "-m", `Release ${tag}\nSource: ${source}`);
 git("push", "--atomic", "origin", "HEAD:refs/heads/dist", `refs/tags/${tag}`);
-const notes = `Precompiled @strawdev/auth-client ${version}.\n\nSource: ${process.env.GITHUB_SERVER_URL}/${repository}/commit/${source}\n\nInstall: pnpm add '@strawdev/auth-client@github:${repository}#${tag}'`;
+const notes = `Precompiled @forest-lab/auth-kit ${version}.\n\nSource: ${process.env.GITHUB_SERVER_URL}/${repository}/commit/${source}\n\nInstall: pnpm add '@forest-lab/auth-kit@github:${repository}#${tag}'`;
 execFileSync(
   "gh",
   [

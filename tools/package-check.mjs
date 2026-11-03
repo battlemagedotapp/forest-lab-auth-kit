@@ -22,7 +22,7 @@ await writeFile(
     type: "module",
     packageManager: "pnpm@12.0.0",
     dependencies: {
-      "@strawdev/auth-client":
+      "@forest-lab/auth-kit":
         process.env.AUTH_CLIENT_GIT_SOURCE ?? `file:${join(directory, tarball)}`,
       "better-auth": "1.6.22",
       "@convex-dev/better-auth": "0.12.5",
@@ -48,19 +48,19 @@ if (process.env.AUTH_CLIENT_GIT_SOURCE) {
 }
 {
   const releaseManifest = JSON.parse(
-    await readFile(join(directory, "node_modules/@strawdev/auth-client/package.json"), "utf8"),
+    await readFile(join(directory, "node_modules/@forest-lab/auth-kit/package.json"), "utf8"),
   );
   if (releaseManifest.scripts || releaseManifest.devDependencies || releaseManifest.packageManager)
     throw new Error("Release contains install/build machinery");
 }
 if (process.env.AUTH_CLIENT_EXPECTED_VERSION) {
   const installed = JSON.parse(
-    await readFile(join(directory, "node_modules/@strawdev/auth-client/package.json"), "utf8"),
+    await readFile(join(directory, "node_modules/@forest-lab/auth-kit/package.json"), "utf8"),
   );
   if (installed.version !== process.env.AUTH_CLIENT_EXPECTED_VERSION)
     throw new Error("Git installation did not use the release tag's version");
 }
-const installedRoot = join(directory, "node_modules/@strawdev/auth-client");
+const installedRoot = join(directory, "node_modules/@forest-lab/auth-kit");
 // Runtime bundle checks cannot catch frontend types leaking into backend declarations.
 const declarations = ["convex/index.d.ts", "convex/component.d.ts"].map((file) =>
   join(installedRoot, "dist", file),
@@ -91,9 +91,9 @@ for (const entry of ["index", "convex/index", "convex/component"]) {
 await writeFile(
   join(directory, "consumer.ts"),
   `import {createAuthClient} from 'better-auth/react';
-import {createAuthDataClient,type InvalidationApi} from '@strawdev/auth-client';
-import {authSignalTables} from '@strawdev/auth-client/convex';
-import {lookup} from '@strawdev/auth-client/convex/component';
+import {createAuthDataClient,type InvalidationApi} from '@forest-lab/auth-kit';
+import {authSignalTables} from '@forest-lab/auth-kit/convex';
+import {lookup} from '@forest-lab/auth-kit/convex/component';
 const client=createAuthDataClient({authClient:createAuthClient(),api:{} as InvalidationApi,features:{sessions:true}});
 void [client,authSignalTables,lookup];`,
 );
@@ -110,16 +110,16 @@ const fixtures = [
 for (const fixture of fixtures) {
   const source = await readFile(join(root, "tests", fixture), "utf8");
   const packed = source
-    .replaceAll("../packages/auth-client/src/index.js", "@strawdev/auth-client")
-    .replaceAll("../packages/auth-client/src/client/types.js", "@strawdev/auth-client")
-    .replaceAll("../packages/auth-client/src/convex/index.js", "@strawdev/auth-client/convex")
+    .replaceAll("../packages/auth-client/src/index.js", "@forest-lab/auth-kit")
+    .replaceAll("../packages/auth-client/src/client/types.js", "@forest-lab/auth-kit")
+    .replaceAll("../packages/auth-client/src/convex/index.js", "@forest-lab/auth-kit/convex")
     .replaceAll(
       "../packages/auth-client/src/convex/component.js",
-      "@strawdev/auth-client/convex/component",
+      "@forest-lab/auth-kit/convex/component",
     )
     .replaceAll(
       "../packages/auth-client/src/better-auth/index.js",
-      "@strawdev/auth-client/better-auth",
+      "@forest-lab/auth-kit/better-auth",
     );
   await writeFile(join(directory, fixture), packed);
 }
@@ -147,7 +147,7 @@ const baseline = `export {createAuthClient} from 'better-auth/react';export {org
 const sizes = [];
 for (const source of [
   baseline,
-  baseline + `export {createAuthDataClient,AuthDataProvider} from '@strawdev/auth-client';`,
+  baseline + `export {createAuthDataClient,AuthDataProvider} from '@forest-lab/auth-kit';`,
 ]) {
   const result = await build({
     stdin: { contents: source, resolveDir: directory },
@@ -175,7 +175,7 @@ for (const source of [
 const backend = await build({
   stdin: {
     contents:
-      "export * from '@strawdev/auth-client/convex'; export * from '@strawdev/auth-client/convex/component';",
+      "export * from '@forest-lab/auth-kit/convex'; export * from '@forest-lab/auth-kit/convex/component';",
     resolveDir: directory,
   },
   bundle: true,

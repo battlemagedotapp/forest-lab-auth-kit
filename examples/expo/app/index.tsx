@@ -3,7 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import * as Linking from "expo-linking";
 import { Button, ScrollView, Text, TextInput, View } from "react-native";
 import { authClient, authData } from "../auth";
-import type { WorkflowAction, WorkflowFeedback as Feedback } from "@strawdev/auth-client";
+import type { WorkflowAction, WorkflowFeedback as Feedback } from "@forest-lab/auth-kit";
 import { z } from "zod";
 
 const ticketInvitationSchema = z.object({

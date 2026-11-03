@@ -45,7 +45,7 @@ on (or signs out) as it did. Compatible.
 
 Several accounts on one device, each browser tab acting as its own: the client-only `accounts`
 capability (`Accounts`/`useAccounts`, `useDeviceAccounts`), the server plugin `deviceAccounts()`
-(new entry `@strawdev/auth-client/better-auth`, beside Better Auth's `multiSession()` and
+(new entry `@forest-lab/auth-kit/better-auth`, beside Better Auth's `multiSession()` and
 `bearer()`) and the client plugin `deviceAccountsClient()`. It needs Better Auth served from the
 app's own origin (a session cookie); the example now does that through an Expo Router API route and
 drops `crossDomain`. With accounts, signing in from an account adds another, `SignOut` leaves only

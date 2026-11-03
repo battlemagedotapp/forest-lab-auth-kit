@@ -1,6 +1,6 @@
 # Source organization
 
-The package lives in `packages/auth-client`. Its name and public imports remain `@strawdev/auth-client`; moving source files does not add supported deep imports.
+The package lives in `packages/auth-client`. Its name and public imports remain `@forest-lab/auth-kit`; moving source files does not add supported deep imports.
 
 ```text
 src/

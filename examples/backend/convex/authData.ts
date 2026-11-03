@@ -1,10 +1,10 @@
-import { createSignalQueries } from "@strawdev/auth-client/convex";
+import { createSignalQueries } from "@forest-lab/auth-kit/convex";
 import { authComponent, features, requireVerifiedInvitationEmail } from "./auth";
 import type { DataModel } from "./_generated/dataModel";
 import { components } from "./_generated/api";
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-export { markSessionsChanged } from "@strawdev/auth-client/convex";
+export { markSessionsChanged } from "@forest-lab/auth-kit/convex";
 export const { signals } = createSignalQueries<DataModel>({
   features,
   requireVerifiedInvitationEmail,

@@ -15,7 +15,7 @@ import {
   wallet as readWallet,
   walletValidator,
   webhookEventValidator,
-} from "@strawdev/auth-client/convex/billing";
+} from "@forest-lab/auth-kit/convex/billing";
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import { components, internal } from "./_generated/api";

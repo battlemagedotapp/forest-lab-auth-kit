@@ -193,7 +193,7 @@ importers:
       '@convex-dev/resend':
         specifier: 0.2.7
         version: 0.2.7(convex-helpers@0.1.124(@standard-schema/spec@1.1.0)(convex@1.46.0(react@19.2.3))(react@19.2.3)(typescript@6.0.3)(zod@4.6.4))(convex@1.46.0(react@19.2.3))(react@19.2.3)
-      '@strawdev/auth-client':
+      '@forest-lab/auth-kit':
         specifier: workspace:*
         version: link:../../packages/auth-client
       better-auth:
@@ -221,12 +221,12 @@ importers:
       '@convex-dev/better-auth':
         specifier: 0.12.5
         version: 0.12.5(@standard-schema/spec@1.1.0)(better-auth@1.6.22(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vitest@4.1.5(@types/node@24.13.3)(jsdom@27.4.0(@noble/hashes@2.4.0)(supports-color@8.1.1))(vite@8.3.0(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.0))))(convex@1.46.0(react@19.2.3))(react@19.2.3)(typescript@6.0.3)
+      '@forest-lab/auth-kit':
+        specifier: workspace:*
+        version: link:../../packages/auth-client
       '@react-native/metro-config':
         specifier: 0.86.3
         version: 0.86.3(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)
-      '@strawdev/auth-client':
-        specifier: workspace:*
-        version: link:../../packages/auth-client
       '@tanstack/react-query':
         specifier: 5.102.8
         version: 5.102.8(react@19.2.3)

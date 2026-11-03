@@ -1,1 +1,1 @@
-export { lookup } from "@strawdev/auth-client/convex/component";
+export { lookup } from "@forest-lab/auth-kit/convex/component";

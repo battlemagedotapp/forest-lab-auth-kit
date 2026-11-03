@@ -1,4 +1,4 @@
 import { defineSchema } from "convex/server";
-import { authSignalTables } from "@strawdev/auth-client/convex";
-import { billingTables } from "@strawdev/auth-client/convex/billing";
+import { authSignalTables } from "@forest-lab/auth-kit/convex";
+import { billingTables } from "@forest-lab/auth-kit/convex/billing";
 export default defineSchema({ ...authSignalTables, ...billingTables });

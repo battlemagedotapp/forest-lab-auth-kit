@@ -12,7 +12,7 @@ import * as SecureStore from "expo-secure-store";
 import { Platform } from "react-native";
 import { ConvexReactClient, useQuery } from "convex/react";
 import { api } from "../backend/convex/_generated/api";
-import { createAuthDataClient, deviceAccountsClient } from "@strawdev/auth-client";
+import { createAuthDataClient, deviceAccountsClient } from "@forest-lab/auth-kit";
 // A browser (not the server rendering the web app's pages).
 const web = Platform.OS === "web" && typeof window !== "undefined";
 export const authClient = createAuthClient({

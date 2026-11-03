@@ -12,8 +12,8 @@
   "dependencies": {
     "@better-auth/expo": "1.6.22",
     "@convex-dev/better-auth": "0.12.5",
+    "@forest-lab/auth-kit": "workspace:*",
     "@react-native/metro-config": "0.86.3",
-    "@strawdev/auth-client": "workspace:*",
     "@tanstack/react-query": "5.102.8",
     "better-auth": "1.6.22",
     "convex": "1.46.0",

@@ -14,4 +14,4 @@ The workflow uses GitHub's job token, so no npm account or registry secret is re
 
 The distribution commit and annotated tag record the source revision. The branch and tag are pushed atomically and existing tags are rejected. If the Git push succeeds but creating the GitHub Release entry fails, create the missing Release entry from the existing tag; do not delete or move the tag or rerun publication for that version. Edit its notes to include consumer changes and migration guidance.
 
-The Release workflow is registered in `strawdotdev/auth-client`. Verify each published tag by installing it from that canonical repository; consumers must not depend on transfer redirects.
+The Release workflow is registered in `battlemagedotapp/forest-lab-auth-kit` (this fork; upstream is `strawdotdev/auth-client`). Verify each published tag by installing it from that canonical repository; consumers must not depend on transfer redirects.

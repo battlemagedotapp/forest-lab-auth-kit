@@ -1,13 +1,13 @@
 {
-  "name": "@strawdev/auth-client",
-  "version": "0.8.6",
-  "description": "Headless Better Auth workflows with reactive Convex freshness",
-  "homepage": "https://github.com/strawdotdev/auth-client#readme",
-  "bugs": "https://github.com/strawdotdev/auth-client/issues",
+  "name": "@forest-lab/auth-kit",
+  "version": "0.9.0",
+  "description": "Forest Lab's auth kit: headless Better Auth workflows with reactive Convex freshness, and prepaid billing (Dodo Payments). A fork of @strawdev/auth-client.",
+  "homepage": "https://github.com/battlemagedotapp/forest-lab-auth-kit#readme",
+  "bugs": "https://github.com/battlemagedotapp/forest-lab-auth-kit/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/strawdotdev/auth-client.git"
+    "url": "git+https://github.com/battlemagedotapp/forest-lab-auth-kit.git"
   },
   "files": [
     "dist",

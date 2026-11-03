@@ -1,6 +1,6 @@
 /**
  * Browser side of prepaid billing: the catalog (to list packs) and a checkout hook. Reads are the app's own
- * authorized Convex queries (`wallet`, `history` from `@strawdev/auth-client/convex/billing`), used with `useQuery`.
+ * authorized Convex queries (`wallet`, `history` from `@forest-lab/auth-kit/convex/billing`), used with `useQuery`.
  */
 import { useAction } from "convex/react";
 import type { FunctionReference } from "convex/server";
