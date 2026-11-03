@@ -5,6 +5,7 @@ const metadata = v.union(v.null(), v.object({
     email: v.optional(v.string()),
     organizationId: v.optional(v.string()),
     inviterId: v.optional(v.string()),
+    role: v.optional(v.string()),
 }));
 /** Register inside the local Better Auth component, never in the parent app. */
 export const lookup = queryGeneric({
@@ -48,7 +49,7 @@ export const lookup = queryGeneric({
                 .eq("organizationId", args.organizationId)
                 .eq("userId", args.userId))
                 .unique();
-            return row ? { _id: row._id } : null;
+            return row ? { _id: row._id, role: row.role } : null;
         }
         if (args.model === "user" && args.email) {
             const row = await ctx.db
