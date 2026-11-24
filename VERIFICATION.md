@@ -8,8 +8,8 @@ Better Auth 1.7.25, `@convex-dev/better-auth` 0.13.1, Convex 1.50.0 and React 19
 - `pnpm verify`, `pnpm test:package` and `pnpm test:git` pass (148 tests). A new test runs a real
   Better Auth server with the convex plugin: after a session read, `withStoredConvexToken` hands
   over the kept `convex_jwt` without asking the server, and its RS256 signature verifies against
-  `/convex/jwks`. New cases cover an asynchronous `getCookie()` and `hasStoredSession`, and a stored-session answer arriving after a session or an unmount is dropped (all fail
-  on 0.9.0's code).
+  `/convex/jwks`. New cases cover an asynchronous `getCookie()` and `hasStoredSession`, and drop
+  a stored-session answer that arrives after a session or an unmount (all fail on 0.9.0's code).
 - `pnpm test:e2e` against a local Convex backend and the controlled mailbox: all eleven journeys
   passed (fixture helper run without `--deployment local`, as before). One assertion now checks
   Better Auth's error code instead of its message, which 1.7 reworded.
