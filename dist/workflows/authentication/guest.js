@@ -39,9 +39,9 @@ function createGuestStore(auth, runtime, hasStoredSession) {
             changed();
         },
         /** The device holds no session, so Better Auth's session read can only come back empty. */
-        holdsNoSession() {
+        async holdsNoSession() {
             try {
-                return hasStoredSession?.() === false;
+                return (await hasStoredSession?.()) === false;
             }
             catch {
                 return false;
@@ -108,8 +108,18 @@ export function useGuestSessionLifecycle(runtime, identity) {
             guest.establish();
         // A failed attempt waits for its explicit retry rather than looping. Without a stored
         // session, the sign-in need not wait for a session read that can only come back empty.
-        if (!userId && !failed && (!pending || guest.holdsNoSession()))
-            void guest.ensure().catch(() => { });
+        if (userId || failed)
+            return;
+        const ensure = () => void guest.ensure().catch(() => { });
+        if (!pending)
+            return ensure();
+        // A session that arrives first, an unmount or disposal cancels the answer: a guest sign-in by
+        // a signed-in device would replace its account's session.
+        let current = true;
+        void guest.holdsNoSession().then((none) => none && current && !runtime.disposed && ensure());
+        return () => {
+            current = false;
+        };
     }, [guest, runtime, userId, ready, pending, failed]);
 }
 const idle = () => () => { };

@@ -30,7 +30,7 @@ export const authData = createAuthDataClient({
 <AuthDataProvider client={authData}>{children}</AuthDataProvider>;
 ```
 
-Pass `withStoredConvexToken(authClient)` to `ConvexBetterAuthProvider` when the client keeps its cookies where the page can read them (`crossDomainClient()` or `expoClient()`; not with [accounts](#accounts), whose session is an HttpOnly cookie): the first Convex token fetch for a session uses the token the convex plugin already set with the sign-in or session read (`convex_jwt`) instead of another round trip, when it is the current session's, has more than a minute left and was not handed out before; refreshes ask the server. Give `ConvexReactClient` `initialAuthTokenReuse: true` (experimental in Convex) so it keeps that token until its scheduled refresh.
+Pass `withStoredConvexToken(authClient)` to `ConvexBetterAuthProvider` when the client keeps its cookies where the page can read them (`crossDomainClient()` or `expoClient()`; not with [accounts](#accounts), whose session is an HttpOnly cookie): the first Convex token fetch for a session uses the token the convex plugin already set with the session read (`convex_jwt`; since `@convex-dev/better-auth` 0.13 a sign-in no longer sets it) instead of another round trip, when it is the current session's, has more than a minute left and was not handed out before; refreshes ask the server. Give `ConvexReactClient` `initialAuthTokenReuse: true` (experimental in Convex) so it keeps that token until its scheduled refresh.
 
 Enable `organizationClient()` on the original client for organization capabilities. For guests, enable `anonymousClient()` and see [Guests](#guests). Keep that client, the official authentication provider, and application foreground/network refresh wiring. Do not add another QueryClient or authentication layer.
 
@@ -223,7 +223,7 @@ Better Auth's [anonymous plugin](https://www.better-auth.com/docs/plugins/anonym
 
 `features: { authentication: true, guests: true }` (client-only; it needs `anonymousClient()`) is for an app where every visitor plays at once as a guest:
 
-- `AuthDataProvider` signs a visitor with no session in anonymously, once, and records when the first authentication is reached. Pass `hasStoredSession` (with `crossDomainClient()` or `expoClient()`: `() => authClient.getCookie().includes("session_token")`) so a visitor whose device holds no session becomes a guest at once, alongside Better Auth's first session read rather than after it: one round trip less before the first paint. Without it, the guest sign-in waits for that read.
+- `AuthDataProvider` signs a visitor with no session in anonymously, once, and records when the first authentication is reached. Pass `hasStoredSession` (with `crossDomainClient()` or `expoClient()`: `async () => (await authClient.getCookie()).includes("session_token")`) so a visitor whose device holds no session becomes a guest at once, alongside Better Auth's first session read rather than after it: one round trip less before the first paint. Without it, the guest sign-in waits for that read.
 - Add `guests()` from `@forest-lab/auth-kit/better-auth` to the server's plugins so a guest's sign-in answers with its session: the client takes it as the session instead of reading it again, another round trip less (Better Auth still reads it once more in the background). Without it, the guest sign-in is followed by a session read.
 - Signing out (and `PasswordResetForm`'s `signOutAfterReset`) leaves a fresh guest; recovery retries the guest sign-in without signing out again. A guest resetting an account's password keeps their own session.
 - `useGuestSession()` returns `userId`, `isAnonymous`, `isEstablished` and the usual `feedback`/`isPending`. `isEstablished` turns true at the first authentication and never false again: gate the first paint on it, never on Convex's `isAuthenticated`, which turns false for a moment whenever a token changes hands. A failed guest sign-in is feedback whose `recovery` retries it.
@@ -462,11 +462,9 @@ No credentials are included. Publishing and migrating existing applications are 
 
 ## Compatibility and provenance
 
-Development baseline: Better Auth 1.6.22, Convex integration 0.12.5, Convex 1.45.0, TanStack React Query 5.102.8, React 19.2; the example uses Expo SDK 57. Peers initially cover these minor lines. React/TanStack are optional peers for backend-only installs and required when importing the root React entry point.
+Development baseline: Better Auth 1.7.25, Convex integration 0.13.1, Convex 1.50.0, TanStack React Query 5.102.8, React 19.3; the example uses Expo SDK 57. Peers initially cover these minor lines. React/TanStack are optional peers for backend-only installs and required when importing the root React entry point.
 
 Version `0.2.0` adds React Hook Form 7.88.0 and @hookform/resolvers 5.9.1 as runtime dependencies. Zod is a peer on the tested `~4.6.4` line (`pnpm add zod@4.6.4`). These are installed dependencies, not vendored code; the application does not compile the library. Backend entry points still exclude React/form code from their import graph, although installed runtime dependencies may bring their own React peer requirements. The existing `v0.1.0` release does not contain these form additions.
-
-The official 0.12.5 provider type resolves its abstract session to `never` with this Better Auth version in the example. The example isolates a type cast at that upstream provider boundary; adapter and hook types remain concrete.
 
 Architecture and cancellation patterns were informed by the reference application and Better Auth UI; see `THIRD_PARTY_NOTICES.md`. Verification results and remaining qualification are recorded in `VERIFICATION.md`.
 

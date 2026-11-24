@@ -226,11 +226,12 @@ export type AuthDataClientConfig<C extends SessionClient, F extends Features, U 
 }) & {
     /**
      * With `guests`: whether this device holds a session at all, such as
-     * `() => authClient.getCookie().includes("session_token")` with Convex's `crossDomainClient()`
-     * or Better Auth's `expoClient()`. When it returns `false`, a visitor becomes a guest at once
+     * `async () => (await authClient.getCookie()).includes("session_token")` with Convex's
+     * `crossDomainClient()` or Better Auth's `expoClient()` (whose `getCookie()` is async since
+     * Better Auth 1.7). When it answers `false`, a visitor becomes a guest at once
      * instead of after Better Auth's first session read, which could only come back empty.
      * Without it, the guest sign-in waits for that read.
      */
-    hasStoredSession?: () => boolean;
+    hasStoredSession?: () => boolean | Promise<boolean>;
 };
 //# sourceMappingURL=types.d.ts.map

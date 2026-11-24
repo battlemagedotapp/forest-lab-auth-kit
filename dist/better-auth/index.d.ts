@@ -36,7 +36,7 @@ export declare const deviceAccounts: (options?: DeviceAccountsOptions) => {
     hooks: {
         after: {
             matcher: (context: import("better-auth").HookEndpointContext) => boolean;
-            handler: (inputContext: import("better-auth").MiddlewareInputContext<import("better-auth").MiddlewareOptions>) => Promise<void>;
+            handler: import("better-auth").Middleware<import("better-auth").MiddlewareOptions, (inputContext: import("better-auth").MiddlewareInputContext<import("better-auth").MiddlewareOptions>) => Promise<void>>;
         }[];
     };
     endpoints: {
@@ -78,7 +78,7 @@ export declare const guests: () => {
     hooks: {
         after: {
             matcher: (context: import("better-auth").HookEndpointContext) => boolean;
-            handler: (inputContext: import("better-auth").MiddlewareInputContext<import("better-auth").MiddlewareOptions>) => Promise<{
+            handler: import("better-auth").Middleware<import("better-auth").MiddlewareOptions, (inputContext: import("better-auth").MiddlewareInputContext<import("better-auth").MiddlewareOptions>) => Promise<{
                 session: {
                     id: string;
                     createdAt: Date;
@@ -90,7 +90,7 @@ export declare const guests: () => {
                     userAgent?: string | null | undefined;
                 } & Record<string, any>;
                 user: unknown;
-            } | undefined>;
+            } | undefined>>;
         }[];
     };
 };

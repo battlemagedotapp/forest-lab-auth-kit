@@ -3,5 +3,5 @@ import type { AuthDataLifecycle } from "./types.js";
 export declare function AuthDataProvider({ client, children, }: {
     client: AuthDataLifecycle;
     children: ReactNode;
-}): import("react/jsx-runtime").JSX.Element;
+}): import("react").JSX.Element;
 //# sourceMappingURL=provider.d.ts.map
