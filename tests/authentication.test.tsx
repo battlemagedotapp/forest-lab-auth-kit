@@ -927,6 +927,23 @@ it("makes a visitor with no stored session a guest without waiting for the first
   }
 });
 
+it("drops a stored-session answer that comes after a session or after the provider is gone", async () => {
+  for (const ending of ["a session arrives", "unmount"] as const) {
+    let answer!: (stored: boolean) => void;
+    const fixture = guestFixture(null, () => new Promise<boolean>((resolve) => (answer = resolve)));
+    fixture.sessions.holdFirstRead();
+    const hook = renderHook(() => fixture.client.useGuestSession(), {
+      wrapper: fixture.wrapper,
+    });
+    await act(async () => {});
+    if (ending === "unmount") hook.unmount();
+    else act(() => fixture.sessions.atom.set({ data: account, isPending: false }));
+    await act(async () => answer(false));
+    expect(fixture.auth.signIn.anonymous).not.toHaveBeenCalled();
+    if (ending !== "unmount") hook.unmount();
+  }
+});
+
 it("takes a guest's session from its sign-in answer rather than reading it again", async () => {
   const fixture = guestFixture(null, () => false);
   fixture.sessions.holdFirstRead();

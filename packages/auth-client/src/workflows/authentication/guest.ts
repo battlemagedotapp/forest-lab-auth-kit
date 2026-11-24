@@ -125,8 +125,14 @@ export function useGuestSessionLifecycle(
     // session, the sign-in need not wait for a session read that can only come back empty.
     if (userId || failed) return;
     const ensure = () => void guest.ensure().catch(() => {});
-    if (!pending) ensure();
-    else void guest.holdsNoSession().then((none) => none && !runtime.disposed && ensure());
+    if (!pending) return ensure();
+    // A session that arrives first, or an unmount, cancels the answer: a guest sign-in by a
+    // signed-in device would replace its account's session.
+    let current = true;
+    void guest.holdsNoSession().then((none) => none && current && ensure());
+    return () => {
+      current = false;
+    };
   }, [guest, runtime, userId, ready, pending, failed]);
 }
 const idle = () => () => {};

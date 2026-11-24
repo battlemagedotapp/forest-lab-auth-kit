@@ -31,9 +31,12 @@ this kit with a Local Install:
 2. Export `consumeOne` and `incrementOne` from `convex/betterAuth/adapter.ts` beside the other
    adapter functions; without them `createClient(components.betterAuth, …)` no longer type-checks.
 3. Regenerate the component schema (`auth generate`) and let Convex regenerate
-   `convex/betterAuth/_generated`. The regeneration adds optional columns and one index (`account`
-   gets `accountId_providerId_userId`; `jwks` gets `alg` and `crv`; with plugins, `twoFactor`,
-   `team`, `teamMember` and `rateLimit` gain theirs); existing rows stay valid.
+   `convex/betterAuth/_generated`. The regeneration adds an `accountId_providerId_userId` index on
+   `account`, optional `alg` and `crv` on `jwks`, and, with the matching plugins, columns on
+   `twoFactor`, `team`, `teamMember` and an index on `rateLimit`. Existing rows stay valid except
+   `team.memberCount`, which is required: a deployment that already has organization teams first
+   deploys with it as `v.optional(v.number())`, backfills each team's count from its members, then
+   regenerates and deploys again with it required (the Convex guide's "Regenerate schema" step).
 4. `Account.issuer`: Better Auth 1.7.0–1.7.2 added a required `issuer` column to `account`; 1.7.3
    removed it, and 1.7.25 has none. Coming from 1.6 there is nothing to add or backfill. A database
    that ran 1.7.0–1.7.2 must make `issuer` optional (or drop it) and drop its index before

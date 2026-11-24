@@ -135,8 +135,8 @@ it("hands over the token the convex plugin kept at the session read, signed by i
     password: "a-long-password",
     name: "A",
   });
-  // The first token makes the signing key; from then on every session read keeps a fresh one.
-  await request("/convex/token");
+  // Since 0.13 a sign-in keeps no Convex token; the session read does.
+  expect(cookie()).not.toMatch(/convex_jwt=[^;]/);
   const { session } = await request("/get-session");
   const token = vi.fn();
   const wrapped = withStoredConvexToken({
