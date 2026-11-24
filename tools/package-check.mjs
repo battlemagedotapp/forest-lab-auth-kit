@@ -24,12 +24,12 @@ await writeFile(
     dependencies: {
       "@forest-lab/auth-kit":
         process.env.AUTH_CLIENT_GIT_SOURCE ?? `file:${join(directory, tarball)}`,
-      "better-auth": "1.6.22",
-      "@convex-dev/better-auth": "0.12.5",
-      convex: "1.45.0",
+      "better-auth": "1.7.25",
+      "@convex-dev/better-auth": "0.13.1",
+      convex: "1.50.0",
       "@tanstack/react-query": "5.102.8",
-      react: "19.2.3",
-      "@types/react": "19.2.4",
+      react: "19.3.1",
+      "@types/react": "19.3.0",
       zod: "4.6.4",
     },
   }),

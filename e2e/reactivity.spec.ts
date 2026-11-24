@@ -246,7 +246,7 @@ test("schema fields reach Better Auth and wrong-recipient, cancelled and expired
       (r) => r.url().includes("/organization/get-invitation") && r.status() === 400,
     );
     await b.goto(`/?invitationId=${id}`);
-    expect(await (await cancelled).json()).toMatchObject({ message: "Invitation not found!" });
+    expect(await (await cancelled).json()).toMatchObject({ code: "INVITATION_NOT_FOUND" });
     const expiringId = await invite();
     updateFixture("invitation", "_id", expiringId, { expiresAt: Date.now() - 1000 });
     const expired = b
@@ -258,7 +258,7 @@ test("schema fields reach Better Auth and wrong-recipient, cancelled and expired
       )
       .then((response) => response.json());
     await b.goto(`/?invitationId=${expiringId}`);
-    expect(await expired).toMatchObject({ message: "Invitation not found!" });
+    expect(await expired).toMatchObject({ code: "INVITATION_NOT_FOUND" });
     await expect(
       b.getByRole("button", { name: "Accept linked invitation", exact: true }),
     ).toHaveCount(0);

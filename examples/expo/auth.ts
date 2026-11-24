@@ -71,5 +71,7 @@ export const guestAuthData = createAuthDataClient({
   features: { authentication: true, guests: true, accounts: true },
   // On native, a visitor with no stored session becomes a guest without waiting for an empty
   // session read; the web's session cookie is out of the page's reach.
-  hasStoredSession: web ? undefined : () => authClient.getCookie().includes("session_token"),
+  hasStoredSession: web
+    ? undefined
+    : async () => (await authClient.getCookie()).includes("session_token"),
 });

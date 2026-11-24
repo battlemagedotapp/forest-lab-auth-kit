@@ -8,16 +8,16 @@
     "schema": "auth generate --config convex/betterAuth/auth.ts --output convex/betterAuth/generatedSchema.ts --yes"
   },
   "dependencies": {
-    "@better-auth/expo": "1.6.22",
-    "@convex-dev/better-auth": "0.12.5",
+    "@better-auth/expo": "1.7.25",
+    "@convex-dev/better-auth": "0.13.1",
     "@convex-dev/resend": "0.2.7",
     "@forest-lab/auth-kit": "workspace:*",
-    "better-auth": "1.6.22",
-    "convex": "1.46.0",
+    "better-auth": "1.7.25",
+    "convex": "1.50.0",
     "zod": "4.6.4"
   },
   "devDependencies": {
-    "auth": "1.6.22",
+    "auth": "1.7.25",
     "typescript": "6.0.3"
   }
 }

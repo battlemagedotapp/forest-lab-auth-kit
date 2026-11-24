@@ -172,7 +172,10 @@ function authenticationFixture(initial: Session | null = null) {
 }
 
 /** An app that keeps guests: every visitor holds a session, a guest's at first. */
-function guestFixture(initial: Session | null = null, hasStoredSession?: () => boolean) {
+function guestFixture(
+  initial: Session | null = null,
+  hasStoredSession?: () => boolean | Promise<boolean>,
+) {
   const { auth, sessions } = authenticationClient(initial);
   const features = { authentication: true, guests: true } as const;
   return {
@@ -900,24 +903,46 @@ it("makes a visitor a guest once and stays established while Convex authenticati
 });
 
 it("makes a visitor with no stored session a guest without waiting for the first session read", async () => {
-  const fixture = guestFixture(null, () => false);
-  fixture.sessions.holdFirstRead();
-  fixture.auth.signIn.anonymous.mockImplementation(async () => {
-    fixture.sessions.transition(guest("guest"));
-    return { user: guest("guest").user, token: guest("guest").session.token };
-  });
-  const hook = renderHook(() => fixture.client.useGuestSession(), {
-    wrapper: fixture.wrapper,
-    reactStrictMode: true,
-  });
-  // The sign-in starts while the first read is still on its way, and is followed by one read.
-  await waitFor(() => expect(hook.result.current.userId).toBe("guest"));
-  expect(fixture.auth.signIn.anonymous).toHaveBeenCalledOnce();
-  expect(fixture.sessions.refetches).toBe(1);
-  act(() => fixture.sessions.settleFirstRead());
-  expect(hook.result.current).toMatchObject({ userId: "guest", isEstablished: true });
-  expect(fixture.auth.signIn.anonymous).toHaveBeenCalledOnce();
-  expect(fixture.sessions.refetches).toBe(1);
+  // A cookie store read at once, or asynchronously as Better Auth 1.7's expoClient() reads its own.
+  for (const hasStoredSession of [() => false, async () => false]) {
+    const fixture = guestFixture(null, hasStoredSession);
+    fixture.sessions.holdFirstRead();
+    fixture.auth.signIn.anonymous.mockImplementation(async () => {
+      fixture.sessions.transition(guest("guest"));
+      return { user: guest("guest").user, token: guest("guest").session.token };
+    });
+    const hook = renderHook(() => fixture.client.useGuestSession(), {
+      wrapper: fixture.wrapper,
+      reactStrictMode: true,
+    });
+    // The sign-in starts while the first read is still on its way, and is followed by one read.
+    await waitFor(() => expect(hook.result.current.userId).toBe("guest"));
+    expect(fixture.auth.signIn.anonymous).toHaveBeenCalledOnce();
+    expect(fixture.sessions.refetches).toBe(1);
+    act(() => fixture.sessions.settleFirstRead());
+    expect(hook.result.current).toMatchObject({ userId: "guest", isEstablished: true });
+    expect(fixture.auth.signIn.anonymous).toHaveBeenCalledOnce();
+    expect(fixture.sessions.refetches).toBe(1);
+    hook.unmount();
+  }
+});
+
+it("drops a stored-session answer that comes after a session or after the client is gone", async () => {
+  for (const ending of ["a session arrives", "unmount", "dispose"] as const) {
+    let answer!: (stored: boolean) => void;
+    const fixture = guestFixture(null, () => new Promise<boolean>((resolve) => (answer = resolve)));
+    fixture.sessions.holdFirstRead();
+    const hook = renderHook(() => fixture.client.useGuestSession(), {
+      wrapper: fixture.wrapper,
+    });
+    await act(async () => {});
+    if (ending === "unmount") hook.unmount();
+    else if (ending === "dispose") fixture.client.dispose();
+    else act(() => fixture.sessions.atom.set({ data: account, isPending: false }));
+    await act(async () => answer(false));
+    expect(fixture.auth.signIn.anonymous).not.toHaveBeenCalled();
+    if (ending !== "unmount") hook.unmount();
+  }
 });
 
 it("takes a guest's session from its sign-in answer rather than reading it again", async () => {
@@ -939,7 +964,7 @@ it("takes a guest's session from its sign-in answer rather than reading it again
 });
 
 it("waits for the first session read when the device may hold a session", async () => {
-  for (const hasStoredSession of [() => true, undefined]) {
+  for (const hasStoredSession of [() => true, async () => true, undefined]) {
     const fixture = guestFixture(null, hasStoredSession);
     fixture.sessions.holdFirstRead();
     fixture.auth.signIn.anonymous.mockImplementation(async () => {

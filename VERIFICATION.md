@@ -1,5 +1,21 @@
 # Verification
 
+## v0.10.0 — 2026-11-25
+
+Better Auth 1.7.25, `@convex-dev/better-auth` 0.13.1, Convex 1.50.0 and React 19.3.1 (see
+`CHANGELOG.md` for the upgrade notes). Breaking: new peer minor lines.
+
+- `pnpm verify`, `pnpm test:package` and `pnpm test:git` pass (148 tests). A new test runs a real
+  Better Auth server with the convex plugin: after a session read, `withStoredConvexToken` hands
+  over the kept `convex_jwt` without asking the server, and its RS256 signature verifies against
+  `/convex/jwks`. New cases cover an asynchronous `getCookie()` and `hasStoredSession`, and drop
+  a stored-session answer that arrives after a session or an unmount (all fail on 0.9.0's code).
+- `pnpm test:e2e` against a local Convex backend and the controlled mailbox: all eleven journeys
+  passed (fixture helper run without `--deployment local`, as before). One assertion now checks
+  Better Auth's error code instead of its message, which 1.7 reworded.
+- Password reset exercised by hand on the same backend (request, emailed link, reset, sign-in
+  with the new password, old one refused): the path 0.13.0 broke works on 0.13.1.
+
 ## v0.7.3 — 2026-10-11
 
 With guests and accounts, `useAccounts().actions.switchToGuest` makes the tab a guest beside the

@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
-import { useEffect, type ComponentProps } from "react";
+import { useEffect } from "react";
 import { AppState, Platform } from "react-native";
 import * as Network from "expo-network";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
@@ -34,18 +34,9 @@ function Recovery() {
   }, []);
   return null;
 }
-// The 0.12.5 provider type resolves session data to never with Better Auth 1.6.22.
-// This cast is restricted to that upstream boundary; the adapter retains the concrete client type.
 export default function Layout() {
   return (
-    <ConvexBetterAuthProvider
-      client={convex}
-      authClient={
-        withStoredConvexToken(authClient) as unknown as ComponentProps<
-          typeof ConvexBetterAuthProvider
-        >["authClient"]
-      }
-    >
+    <ConvexBetterAuthProvider client={convex} authClient={withStoredConvexToken(authClient)}>
       <AuthDataProvider client={authData}>
         <Recovery />
         <Slot />
