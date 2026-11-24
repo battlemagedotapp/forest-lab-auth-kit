@@ -1,6 +1,6 @@
 {
   "name": "@forest-lab/auth-kit",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Forest Lab's auth kit: headless Better Auth workflows with reactive Convex freshness, and prepaid billing (Dodo Payments). A fork of @strawdev/auth-client.",
   "homepage": "https://github.com/battlemagedotapp/forest-lab-auth-kit#readme",
   "bugs": "https://github.com/battlemagedotapp/forest-lab-auth-kit/issues",
@@ -54,11 +54,11 @@
     "react-hook-form": "7.88.0"
   },
   "peerDependencies": {
-    "@convex-dev/better-auth": "~0.12.5",
+    "@convex-dev/better-auth": "~0.13.1",
     "@tanstack/react-query": "~5.102.8",
-    "better-auth": "~1.6.22",
-    "convex": "^1.45.0",
-    "react": "~19.2.0",
+    "better-auth": "~1.7.25",
+    "convex": "^1.50.0",
+    "react": "~19.3.0",
     "zod": "~4.6.4"
   },
   "peerDependenciesMeta": {

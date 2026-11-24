@@ -3,7 +3,8 @@
  * Convex's `crossDomainClient()` on the web or Better Auth's `expoClient()` on native.
  */
 export type StoredConvexTokenClient = {
-  getCookie(): string;
+  /** Better Auth 1.7's `expoClient()` reads its secure store asynchronously. */
+  getCookie(): string | Promise<string>;
   $store: { atoms: Record<string, { get(): unknown } | undefined> };
   convex: { token: (...args: any[]) => Promise<unknown> };
 };
@@ -13,7 +14,7 @@ const MIN_LIFETIME_MS = 60_000;
 
 /**
  * The client for `ConvexBetterAuthProvider`, taking the Convex token Better Auth already handed
- * over. The convex plugin sets it (`convex_jwt`) with every sign-in and session read, and the
+ * over. The convex plugin sets it (`convex_jwt`) with every session read, and the
  * client keeps it with the session cookie. The first fetch for a session uses that token instead
  * of another round trip on every page load; refreshes and retries ask the server. A kept token is
  * used only when it is the current session's, has more than a minute left, and was not handed out
@@ -23,7 +24,7 @@ const MIN_LIFETIME_MS = 60_000;
 export function withStoredConvexToken<C extends StoredConvexTokenClient>(client: C): C {
   let handedOut: string | undefined;
   async function token(...args: unknown[]) {
-    const stored = storedConvexToken(client);
+    const stored = await storedConvexToken(client);
     if (stored && stored !== handedOut) {
       handedOut = stored;
       return { data: { token: stored }, error: null };
@@ -40,9 +41,9 @@ export function withStoredConvexToken<C extends StoredConvexTokenClient>(client:
 }
 
 /** The kept token, when it is the current session's and not about to expire. */
-function storedConvexToken(client: StoredConvexTokenClient) {
+async function storedConvexToken(client: StoredConvexTokenClient) {
   try {
-    const value = /(?:^|;\s*)[^=;]*convex_jwt=([^;]+)/.exec(client.getCookie())?.[1];
+    const value = /(?:^|;\s*)[^=;]*convex_jwt=([^;]+)/.exec(await client.getCookie())?.[1];
     const session = client.$store.atoms.session?.get() as
       | { data?: { session?: { id?: string } } | null }
       | undefined;

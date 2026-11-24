@@ -18,7 +18,7 @@ export const guestSession = (runtime: CacheRuntime) => guestSessions.get(runtime
 function createGuestStore(
   auth: GuestClient,
   runtime: CacheRuntime,
-  hasStoredSession?: () => boolean,
+  hasStoredSession?: () => boolean | Promise<boolean>,
 ) {
   const listeners = new Set<() => void>();
   let attempt: Promise<void> | undefined;
@@ -51,9 +51,9 @@ function createGuestStore(
       changed();
     },
     /** The device holds no session, so Better Auth's session read can only come back empty. */
-    holdsNoSession() {
+    async holdsNoSession() {
       try {
-        return hasStoredSession?.() === false;
+        return (await hasStoredSession?.()) === false;
       } catch {
         return false;
       }
@@ -123,8 +123,10 @@ export function useGuestSessionLifecycle(
     if (ready) guest.establish();
     // A failed attempt waits for its explicit retry rather than looping. Without a stored
     // session, the sign-in need not wait for a session read that can only come back empty.
-    if (!userId && !failed && (!pending || guest.holdsNoSession()))
-      void guest.ensure().catch(() => {});
+    if (userId || failed) return;
+    const ensure = () => void guest.ensure().catch(() => {});
+    if (!pending) ensure();
+    else void guest.holdsNoSession().then((none) => none && !runtime.disposed && ensure());
   }, [guest, runtime, userId, ready, pending, failed]);
 }
 const idle = () => () => {};
@@ -132,7 +134,7 @@ const idle = () => () => {};
 export function createGuestSession(
   auth: GuestClient,
   runtime: CacheRuntime,
-  hasStoredSession?: () => boolean,
+  hasStoredSession?: () => boolean | Promise<boolean>,
 ) {
   const guest = createGuestStore(auth, runtime, hasStoredSession);
   guestSessions.set(runtime, guest);
